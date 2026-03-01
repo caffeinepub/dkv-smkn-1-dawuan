@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useSiteLogo } from "../../hooks/useSiteLogo";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
@@ -19,6 +20,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
+  const { logoUrl } = useSiteLogo();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -42,17 +44,17 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
             <img
-              src="/assets/generated/dkv-logo-transparent.dim_200x200.png"
+              src={logoUrl}
               alt="DKV Logo"
-              className="w-10 h-10 object-contain"
+              className="w-9 h-9 sm:w-10 sm:h-10 object-contain shrink-0"
             />
-            <div className="leading-tight">
-              <p className="font-display font-bold text-base text-brand-navy">
+            <div className="leading-tight min-w-0">
+              <p className="font-display font-bold text-sm sm:text-base text-brand-navy truncate">
                 DKV SMKN 1 Dawuan
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 Desain Komunikasi Visual
               </p>
             </div>

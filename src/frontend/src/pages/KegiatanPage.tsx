@@ -54,8 +54,8 @@ export default function KegiatanPage() {
   return (
     <div className="pt-16 min-h-screen">
       {/* Page Header */}
-      <div className="bg-brand-navy py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-brand-navy py-10 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -63,17 +63,17 @@ export default function KegiatanPage() {
             <p className="text-brand-orange font-medium mb-2">
               Agenda & Program
             </p>
-            <h1 className="font-display text-4xl font-bold text-white mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Kegiatan
             </h1>
-            <p className="text-white/70 max-w-2xl">
+            <p className="text-sm sm:text-base text-white/70 max-w-2xl">
               Program dan agenda kegiatan jurusan DKV SMKN 1 Dawuan
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Filter */}
         <div className="flex flex-wrap gap-2 mb-8">
           {filterOptions.map((opt) => (

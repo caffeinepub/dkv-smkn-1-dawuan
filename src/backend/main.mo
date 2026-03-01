@@ -13,11 +13,11 @@ import AccessControl "authorization/access-control";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 import Iter "mo:core/Iter";
-import Migration "migration";
+
 import Random "mo:core/Random";
 import Blob "mo:core/Blob";
 
-(with migration = Migration.run)
+
 actor {
   include MixinStorage();
 

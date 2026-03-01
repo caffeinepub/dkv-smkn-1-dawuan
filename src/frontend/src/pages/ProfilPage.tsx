@@ -73,17 +73,17 @@ export default function ProfilPage() {
   return (
     <div className="pt-16 min-h-screen">
       {/* Page Header */}
-      <div className="bg-brand-navy py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-brand-navy py-10 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <p className="text-brand-orange font-medium mb-2">Jurusan DKV</p>
-            <h1 className="font-display text-4xl font-bold text-white mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Profil Jurusan
             </h1>
-            <p className="text-white/70 max-w-2xl">
+            <p className="text-sm sm:text-base text-white/70 max-w-2xl">
               Mengenal lebih dalam jurusan Desain Komunikasi Visual SMKN 1
               Dawuan
             </p>
@@ -91,9 +91,9 @@ export default function ProfilPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Tabs defaultValue="visi" className="w-full">
-          <TabsList className="flex flex-wrap gap-1 h-auto p-1 mb-8 bg-secondary rounded-xl">
+          <TabsList className="flex flex-wrap gap-1 h-auto p-1 mb-6 sm:mb-8 bg-secondary rounded-xl w-full sm:w-auto">
             <TabsTrigger
               value="visi"
               className="rounded-lg data-[state=active]:bg-brand-navy data-[state=active]:text-white"
@@ -131,13 +131,13 @@ export default function ProfilPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <Card className="border-0 shadow-card">
-                <CardContent className="p-8">
+                <CardContent className="p-5 sm:p-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-brand-navy flex items-center justify-center">
-                      <Eye className="w-7 h-7 text-white" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand-navy flex items-center justify-center shrink-0">
+                      <Eye className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-display text-2xl font-bold text-brand-navy">
+                      <h2 className="font-display text-xl sm:text-2xl font-bold text-brand-navy">
                         Visi
                       </h2>
                       <p className="text-muted-foreground text-sm">
@@ -175,13 +175,13 @@ export default function ProfilPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <Card className="border-0 shadow-card">
-                <CardContent className="p-8">
+                <CardContent className="p-5 sm:p-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-brand-orange flex items-center justify-center">
-                      <Target className="w-7 h-7 text-white" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand-orange flex items-center justify-center shrink-0">
+                      <Target className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-display text-2xl font-bold text-brand-navy">
+                      <h2 className="font-display text-xl sm:text-2xl font-bold text-brand-navy">
                         Misi
                       </h2>
                       <p className="text-muted-foreground text-sm">
@@ -232,13 +232,13 @@ export default function ProfilPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <Card className="border-0 shadow-card">
-                <CardContent className="p-8">
+                <CardContent className="p-5 sm:p-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-green-600 flex items-center justify-center">
-                      <Lightbulb className="w-7 h-7 text-white" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-green-600 flex items-center justify-center shrink-0">
+                      <Lightbulb className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-display text-2xl font-bold text-brand-navy">
+                      <h2 className="font-display text-xl sm:text-2xl font-bold text-brand-navy">
                         Tujuan
                       </h2>
                       <p className="text-muted-foreground text-sm">

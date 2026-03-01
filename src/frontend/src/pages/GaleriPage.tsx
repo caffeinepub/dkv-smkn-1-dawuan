@@ -85,24 +85,24 @@ export default function GaleriPage() {
   return (
     <div className="pt-16 min-h-screen">
       {/* Page Header */}
-      <div className="bg-brand-navy py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-brand-navy py-10 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <p className="text-brand-orange font-medium mb-2">Karya Siswa</p>
-            <h1 className="font-display text-4xl font-bold text-white mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Galeri Foto
             </h1>
-            <p className="text-white/70 max-w-2xl">
+            <p className="text-sm sm:text-base text-white/70 max-w-2xl">
               Kumpulan karya terbaik siswa DKV SMKN 1 Dawuan
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Category Filters */}
         {categories.length > 1 && (
           <div className="flex flex-wrap gap-2 mb-8">
@@ -125,7 +125,7 @@ export default function GaleriPage() {
 
         {/* Gallery Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
             ))}
@@ -133,7 +133,7 @@ export default function GaleriPage() {
         ) : filtered.length > 0 ? (
           <motion.div
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
           >
             <AnimatePresence mode="popLayout">
               {filtered.map((item) => (

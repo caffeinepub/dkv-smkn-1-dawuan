@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   Calendar,
   ChevronRight,
+  Home,
   Image,
   LayoutDashboard,
   Loader2,
@@ -18,6 +19,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
+import { useSiteLogo } from "../../hooks/useSiteLogo";
+import AdminBerandaSection from "./sections/AdminBerandaSection";
 import AdminGaleriSection from "./sections/AdminGaleriSection";
 import AdminInformasiSection from "./sections/AdminInformasiSection";
 import AdminKegiatanSection from "./sections/AdminKegiatanSection";
@@ -29,6 +32,7 @@ import AdminPrestasiSection from "./sections/AdminPrestasiSection";
 import AdminProfilSection from "./sections/AdminProfilSection";
 
 type Section =
+  | "beranda"
   | "profil"
   | "pengajar"
   | "galeri"
@@ -40,6 +44,7 @@ type Section =
   | "pengaturan";
 
 const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
+  { id: "beranda", label: "Slide Hero", icon: Home },
   { id: "profil", label: "Profil Jurusan", icon: LayoutDashboard },
   { id: "pengajar", label: "Pengajar", icon: Users },
   { id: "galeri", label: "Galeri", icon: Image },
@@ -52,6 +57,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
 ];
 
 const sectionComponents: Record<Section, React.ComponentType> = {
+  beranda: AdminBerandaSection,
   profil: AdminProfilSection,
   pengajar: AdminPengajarSection,
   galeri: AdminGaleriSection,
@@ -71,6 +77,7 @@ export default function AdminDashboard() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const { isLoggedIn, isLoading, logout } = useAdminAuth();
+  const { logoUrl } = useSiteLogo();
 
   // Auth guard
   useEffect(() => {
@@ -116,11 +123,7 @@ export default function AdminDashboard() {
         {/* Sidebar Header */}
         <div className="p-4 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <img
-              src="/assets/generated/dkv-logo-transparent.dim_200x200.png"
-              alt="Logo"
-              className="w-9 h-9 object-contain"
-            />
+            <img src={logoUrl} alt="Logo" className="w-9 h-9 object-contain" />
             <div className="leading-tight">
               <p className="font-display font-bold text-sm">DKV Admin</p>
               <p className="text-xs text-sidebar-foreground/60">
@@ -223,7 +226,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 md:p-6">
           <ActiveComponent />
         </main>
       </div>

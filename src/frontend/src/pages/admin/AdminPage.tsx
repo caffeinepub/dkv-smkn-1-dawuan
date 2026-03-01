@@ -3,8 +3,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
-import { AlertCircle, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
-import { motion } from "motion/react";
+import {
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff,
+  HelpCircle,
+  Loader2,
+  Lock,
+  User,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 
@@ -15,6 +25,7 @@ export default function AdminPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
@@ -205,7 +216,66 @@ export default function AdminPage() {
                 </Button>
               </form>
 
-              <p className="text-xs text-muted-foreground text-center mt-5">
+              {/* Forgot Password */}
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword((prev) => !prev)}
+                  className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-brand-navy transition-colors py-1"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    Lupa password?
+                  </span>
+                  {showForgotPassword ? (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showForgotPassword && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-2 p-3.5 rounded-lg bg-blue-50 border border-blue-100 text-xs text-blue-800 space-y-2">
+                        <p className="font-medium text-blue-900">
+                          Cara reset password admin:
+                        </p>
+                        <ol className="list-decimal list-inside space-y-1 text-blue-700">
+                          <li>
+                            Jika belum pernah diubah, gunakan kredensial
+                            default:
+                            <br />
+                            <span className="font-mono bg-blue-100 px-1 py-0.5 rounded ml-4">
+                              Username: admin
+                            </span>
+                            <br />
+                            <span className="font-mono bg-blue-100 px-1 py-0.5 rounded ml-4">
+                              Password: dkv2024
+                            </span>
+                          </li>
+                          <li>
+                            Setelah masuk, buka menu <strong>Pengaturan</strong>{" "}
+                            di sidebar untuk mengganti username dan password.
+                          </li>
+                          <li>
+                            Jika lupa kredensial yang sudah diubah, hubungi
+                            pengelola teknis website untuk melakukan reset.
+                          </li>
+                        </ol>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center mt-4">
                 Hanya admin yang dapat mengakses panel ini.
               </p>
             </CardContent>

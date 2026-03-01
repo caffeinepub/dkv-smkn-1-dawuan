@@ -75,25 +75,25 @@ export default function KontakPage() {
   return (
     <div className="pt-16 min-h-screen">
       {/* Page Header */}
-      <div className="bg-brand-navy py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-brand-navy py-10 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <p className="text-brand-orange font-medium mb-2">Hubungi Kami</p>
-            <h1 className="font-display text-4xl font-bold text-white mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Kontak
             </h1>
-            <p className="text-white/70 max-w-2xl">
+            <p className="text-sm sm:text-base text-white/70 max-w-2xl">
               Sampaikan pertanyaan atau pesan Anda kepada kami
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10">
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}

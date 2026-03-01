@@ -13,17 +13,17 @@ export default function InformasiPage() {
   return (
     <div className="pt-16 min-h-screen">
       {/* Page Header */}
-      <div className="bg-brand-navy py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-brand-navy py-10 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <p className="text-brand-orange font-medium mb-2">Kabar Terbaru</p>
-            <h1 className="font-display text-4xl font-bold text-white mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Informasi
             </h1>
-            <p className="text-white/70 max-w-2xl">
+            <p className="text-sm sm:text-base text-white/70 max-w-2xl">
               Berita, pengumuman, dan informasi terkini dari jurusan DKV SMKN 1
               Dawuan
             </p>
@@ -31,7 +31,7 @@ export default function InformasiPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
