@@ -72,15 +72,23 @@ export default function GaleriPage() {
     null,
   );
 
+  // Filter out system/internal entries used for config storage
+  const publicGaleri = galeri.filter(
+    (g) =>
+      !g.kategori.startsWith("__system_") &&
+      g.kategori !== "__system_slides__" &&
+      g.kategori !== "__system_logo__",
+  );
+
   const categories = [
     "Semua",
-    ...Array.from(new Set(galeri.map((g) => g.kategori))).filter(Boolean),
+    ...Array.from(new Set(publicGaleri.map((g) => g.kategori))).filter(Boolean),
   ];
 
   const filtered =
     activeKategori === "Semua"
-      ? galeri
-      : galeri.filter((g) => g.kategori === activeKategori);
+      ? publicGaleri
+      : publicGaleri.filter((g) => g.kategori === activeKategori);
 
   return (
     <div className="pt-16 min-h-screen">

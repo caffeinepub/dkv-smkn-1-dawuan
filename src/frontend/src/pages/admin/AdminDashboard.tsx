@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   Calendar,
   ChevronRight,
+  GraduationCap,
   Home,
   Image,
   LayoutDashboard,
@@ -30,11 +31,13 @@ import AdminPengaturanSection from "./sections/AdminPengaturanSection";
 import AdminPesanSection from "./sections/AdminPesanSection";
 import AdminPrestasiSection from "./sections/AdminPrestasiSection";
 import AdminProfilSection from "./sections/AdminProfilSection";
+import AdminSiswaSection from "./sections/AdminSiswaSection";
 
 type Section =
   | "beranda"
   | "profil"
   | "pengajar"
+  | "siswa"
   | "galeri"
   | "informasi"
   | "prestasi"
@@ -47,6 +50,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "beranda", label: "Slide Hero", icon: Home },
   { id: "profil", label: "Profil Jurusan", icon: LayoutDashboard },
   { id: "pengajar", label: "Pengajar", icon: Users },
+  { id: "siswa", label: "Data Siswa", icon: GraduationCap },
   { id: "galeri", label: "Galeri", icon: Image },
   { id: "informasi", label: "Informasi", icon: Newspaper },
   { id: "prestasi", label: "Prestasi", icon: Trophy },
@@ -60,6 +64,7 @@ const sectionComponents: Record<Section, React.ComponentType> = {
   beranda: AdminBerandaSection,
   profil: AdminProfilSection,
   pengajar: AdminPengajarSection,
+  siswa: AdminSiswaSection,
   galeri: AdminGaleriSection,
   informasi: AdminInformasiSection,
   prestasi: AdminPrestasiSection,

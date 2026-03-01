@@ -47,7 +47,9 @@ const emptyForm = {
 };
 
 export default function AdminGaleriSection() {
-  const { data: galeri = [], isLoading } = useAllGaleri();
+  const { data: allGaleri = [], isLoading } = useAllGaleri();
+  // Filter out internal system entries used for config storage
+  const galeri = allGaleri.filter((g) => !g.kategori.startsWith("__system_"));
   const addGaleri = useAddGaleri();
   const deleteGaleri = useDeleteGaleri();
 

@@ -20,7 +20,7 @@ export const _CaffeineStorageRefillResult = IDL.Record({
   'topped_up_amount' : IDL.Opt(IDL.Nat),
 });
 export const Time = IDL.Int;
-export const T__4 = IDL.Record({
+export const T__5 = IDL.Record({
   'id' : IDL.Text,
   'tanggalUpload' : Time,
   'judul' : IDL.Text,
@@ -28,7 +28,7 @@ export const T__4 = IDL.Record({
   'kategori' : IDL.Text,
   'fotoId' : IDL.Text,
 });
-export const T__3 = IDL.Record({
+export const T__4 = IDL.Record({
   'id' : IDL.Text,
   'isi' : IDL.Text,
   'published' : IDL.Bool,
@@ -37,7 +37,7 @@ export const T__3 = IDL.Record({
   'tanggalPublish' : Time,
   'coverFotoId' : IDL.Text,
 });
-export const T__2 = IDL.Record({
+export const T__3 = IDL.Record({
   'id' : IDL.Text,
   'status' : IDL.Variant({
     'upcoming' : IDL.Null,
@@ -50,7 +50,7 @@ export const T__2 = IDL.Record({
   'lokasi' : IDL.Text,
   'fotoId' : IDL.Text,
 });
-export const T__1 = IDL.Record({
+export const T__2 = IDL.Record({
   'id' : IDL.Text,
   'bio' : IDL.Text,
   'nama' : IDL.Text,
@@ -59,7 +59,7 @@ export const T__1 = IDL.Record({
   'mataPelajaran' : IDL.Text,
   'fotoId' : IDL.Text,
 });
-export const T = IDL.Record({
+export const T__1 = IDL.Record({
   'id' : IDL.Text,
   'tahun' : IDL.Nat,
   'judul' : IDL.Text,
@@ -74,12 +74,24 @@ export const T = IDL.Record({
   'siswa' : IDL.Text,
   'fotoId' : IDL.Text,
 });
+export const Status = IDL.Variant({ 'aktif' : IDL.Null, 'alumni' : IDL.Null });
+export const T = IDL.Record({
+  'id' : IDL.Text,
+  'status' : Status,
+  'alamat' : IDL.Text,
+  'nama' : IDL.Text,
+  'nisn' : IDL.Text,
+  'angkatan' : IDL.Nat,
+  'kelas' : IDL.Text,
+  'jurusan' : IDL.Text,
+  'fotoId' : IDL.Text,
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
-export const T__7 = IDL.Record({
+export const T__8 = IDL.Record({
   'id' : IDL.Text,
   'isi' : IDL.Text,
   'nama' : IDL.Text,
@@ -88,14 +100,14 @@ export const T__7 = IDL.Record({
   'timestamp' : Time,
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
-export const T__6 = IDL.Record({
+export const T__7 = IDL.Record({
   'jamOperasional' : IDL.Text,
   'alamat' : IDL.Text,
   'koordinat' : IDL.Text,
   'email' : IDL.Text,
   'telepon' : IDL.Text,
 });
-export const T__5 = IDL.Record({
+export const T__6 = IDL.Record({
   'tujuan' : IDL.Text,
   'misi' : IDL.Text,
   'visi' : IDL.Text,
@@ -129,11 +141,12 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addGaleri' : IDL.Func([IDL.Text, T__4], [], []),
-  'addInformasi' : IDL.Func([IDL.Text, T__3], [], []),
-  'addKegiatan' : IDL.Func([IDL.Text, T__2], [], []),
-  'addPengajar' : IDL.Func([IDL.Text, T__1], [], []),
-  'addPrestasi' : IDL.Func([IDL.Text, T], [], []),
+  'addGaleri' : IDL.Func([IDL.Text, T__5], [], []),
+  'addInformasi' : IDL.Func([IDL.Text, T__4], [], []),
+  'addKegiatan' : IDL.Func([IDL.Text, T__3], [], []),
+  'addPengajar' : IDL.Func([IDL.Text, T__2], [], []),
+  'addPrestasi' : IDL.Func([IDL.Text, T__1], [], []),
+  'addSiswa' : IDL.Func([IDL.Text, T], [], []),
   'adminLogin' : IDL.Func(
       [IDL.Text, IDL.Text],
       [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
@@ -146,15 +159,17 @@ export const idlService = IDL.Service({
   'deleteKegiatan' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'deletePengajar' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'deletePrestasi' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'getAllGaleri' : IDL.Func([], [IDL.Vec(T__4)], ['query']),
-  'getAllInformasi' : IDL.Func([IDL.Text], [IDL.Vec(T__3)], ['query']),
-  'getAllKegiatan' : IDL.Func([], [IDL.Vec(T__2)], ['query']),
-  'getAllPengajar' : IDL.Func([], [IDL.Vec(T__1)], ['query']),
-  'getAllPesan' : IDL.Func([IDL.Text], [IDL.Vec(T__7)], ['query']),
-  'getAllPrestasi' : IDL.Func([], [IDL.Vec(T)], ['query']),
+  'deleteSiswa' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'getAllGaleri' : IDL.Func([], [IDL.Vec(T__5)], ['query']),
+  'getAllInformasi' : IDL.Func([IDL.Text], [IDL.Vec(T__4)], ['query']),
+  'getAllKegiatan' : IDL.Func([], [IDL.Vec(T__3)], ['query']),
+  'getAllPengajar' : IDL.Func([], [IDL.Vec(T__2)], ['query']),
+  'getAllPesan' : IDL.Func([IDL.Text], [IDL.Vec(T__8)], ['query']),
+  'getAllPrestasi' : IDL.Func([], [IDL.Vec(T__1)], ['query']),
+  'getAllSiswa' : IDL.Func([IDL.Text], [IDL.Vec(T)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getGaleriByKategori' : IDL.Func([IDL.Text], [IDL.Vec(T__4)], ['query']),
+  'getGaleriByKategori' : IDL.Func([IDL.Text], [IDL.Vec(T__5)], ['query']),
   'getKegiatanByStatus' : IDL.Func(
       [
         IDL.Variant({
@@ -163,10 +178,10 @@ export const idlService = IDL.Service({
           'ongoing' : IDL.Null,
         }),
       ],
-      [IDL.Vec(T__2)],
+      [IDL.Vec(T__3)],
       ['query'],
     ),
-  'getKontak' : IDL.Func([], [IDL.Opt(T__6)], ['query']),
+  'getKontak' : IDL.Func([], [IDL.Opt(T__7)], ['query']),
   'getPrestasiByTingkat' : IDL.Func(
       [
         IDL.Variant({
@@ -177,11 +192,13 @@ export const idlService = IDL.Service({
           'sekolah' : IDL.Null,
         }),
       ],
-      [IDL.Vec(T)],
+      [IDL.Vec(T__1)],
       ['query'],
     ),
-  'getProfil' : IDL.Func([], [IDL.Opt(T__5)], ['query']),
-  'getPublishedInformasi' : IDL.Func([], [IDL.Vec(T__3)], ['query']),
+  'getProfil' : IDL.Func([], [IDL.Opt(T__6)], ['query']),
+  'getPublishedInformasi' : IDL.Func([], [IDL.Vec(T__4)], ['query']),
+  'getSiswaByKelas' : IDL.Func([IDL.Text, IDL.Text], [IDL.Vec(T)], ['query']),
+  'getSiswaByStatus' : IDL.Func([IDL.Text, Status], [IDL.Vec(T)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -200,17 +217,18 @@ export const idlService = IDL.Service({
       [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
       [],
     ),
-  'updateGaleri' : IDL.Func([IDL.Text, IDL.Text, T__4], [], []),
-  'updateInformasi' : IDL.Func([IDL.Text, IDL.Text, T__3], [], []),
-  'updateKegiatan' : IDL.Func([IDL.Text, IDL.Text, T__2], [], []),
+  'updateGaleri' : IDL.Func([IDL.Text, IDL.Text, T__5], [], []),
+  'updateInformasi' : IDL.Func([IDL.Text, IDL.Text, T__4], [], []),
+  'updateKegiatan' : IDL.Func([IDL.Text, IDL.Text, T__3], [], []),
   'updateKontak' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
       [],
     ),
-  'updatePengajar' : IDL.Func([IDL.Text, IDL.Text, T__1], [], []),
-  'updatePrestasi' : IDL.Func([IDL.Text, IDL.Text, T], [], []),
+  'updatePengajar' : IDL.Func([IDL.Text, IDL.Text, T__2], [], []),
+  'updatePrestasi' : IDL.Func([IDL.Text, IDL.Text, T__1], [], []),
   'updateProfil' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+  'updateSiswa' : IDL.Func([IDL.Text, IDL.Text, T], [], []),
 });
 
 export const idlInitArgs = [];
@@ -228,7 +246,7 @@ export const idlFactory = ({ IDL }) => {
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
   const Time = IDL.Int;
-  const T__4 = IDL.Record({
+  const T__5 = IDL.Record({
     'id' : IDL.Text,
     'tanggalUpload' : Time,
     'judul' : IDL.Text,
@@ -236,7 +254,7 @@ export const idlFactory = ({ IDL }) => {
     'kategori' : IDL.Text,
     'fotoId' : IDL.Text,
   });
-  const T__3 = IDL.Record({
+  const T__4 = IDL.Record({
     'id' : IDL.Text,
     'isi' : IDL.Text,
     'published' : IDL.Bool,
@@ -245,7 +263,7 @@ export const idlFactory = ({ IDL }) => {
     'tanggalPublish' : Time,
     'coverFotoId' : IDL.Text,
   });
-  const T__2 = IDL.Record({
+  const T__3 = IDL.Record({
     'id' : IDL.Text,
     'status' : IDL.Variant({
       'upcoming' : IDL.Null,
@@ -258,7 +276,7 @@ export const idlFactory = ({ IDL }) => {
     'lokasi' : IDL.Text,
     'fotoId' : IDL.Text,
   });
-  const T__1 = IDL.Record({
+  const T__2 = IDL.Record({
     'id' : IDL.Text,
     'bio' : IDL.Text,
     'nama' : IDL.Text,
@@ -267,7 +285,7 @@ export const idlFactory = ({ IDL }) => {
     'mataPelajaran' : IDL.Text,
     'fotoId' : IDL.Text,
   });
-  const T = IDL.Record({
+  const T__1 = IDL.Record({
     'id' : IDL.Text,
     'tahun' : IDL.Nat,
     'judul' : IDL.Text,
@@ -282,12 +300,24 @@ export const idlFactory = ({ IDL }) => {
     'siswa' : IDL.Text,
     'fotoId' : IDL.Text,
   });
+  const Status = IDL.Variant({ 'aktif' : IDL.Null, 'alumni' : IDL.Null });
+  const T = IDL.Record({
+    'id' : IDL.Text,
+    'status' : Status,
+    'alamat' : IDL.Text,
+    'nama' : IDL.Text,
+    'nisn' : IDL.Text,
+    'angkatan' : IDL.Nat,
+    'kelas' : IDL.Text,
+    'jurusan' : IDL.Text,
+    'fotoId' : IDL.Text,
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
-  const T__7 = IDL.Record({
+  const T__8 = IDL.Record({
     'id' : IDL.Text,
     'isi' : IDL.Text,
     'nama' : IDL.Text,
@@ -296,14 +326,14 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : Time,
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
-  const T__6 = IDL.Record({
+  const T__7 = IDL.Record({
     'jamOperasional' : IDL.Text,
     'alamat' : IDL.Text,
     'koordinat' : IDL.Text,
     'email' : IDL.Text,
     'telepon' : IDL.Text,
   });
-  const T__5 = IDL.Record({
+  const T__6 = IDL.Record({
     'tujuan' : IDL.Text,
     'misi' : IDL.Text,
     'visi' : IDL.Text,
@@ -337,11 +367,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addGaleri' : IDL.Func([IDL.Text, T__4], [], []),
-    'addInformasi' : IDL.Func([IDL.Text, T__3], [], []),
-    'addKegiatan' : IDL.Func([IDL.Text, T__2], [], []),
-    'addPengajar' : IDL.Func([IDL.Text, T__1], [], []),
-    'addPrestasi' : IDL.Func([IDL.Text, T], [], []),
+    'addGaleri' : IDL.Func([IDL.Text, T__5], [], []),
+    'addInformasi' : IDL.Func([IDL.Text, T__4], [], []),
+    'addKegiatan' : IDL.Func([IDL.Text, T__3], [], []),
+    'addPengajar' : IDL.Func([IDL.Text, T__2], [], []),
+    'addPrestasi' : IDL.Func([IDL.Text, T__1], [], []),
+    'addSiswa' : IDL.Func([IDL.Text, T], [], []),
     'adminLogin' : IDL.Func(
         [IDL.Text, IDL.Text],
         [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
@@ -354,15 +385,17 @@ export const idlFactory = ({ IDL }) => {
     'deleteKegiatan' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'deletePengajar' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'deletePrestasi' : IDL.Func([IDL.Text, IDL.Text], [], []),
-    'getAllGaleri' : IDL.Func([], [IDL.Vec(T__4)], ['query']),
-    'getAllInformasi' : IDL.Func([IDL.Text], [IDL.Vec(T__3)], ['query']),
-    'getAllKegiatan' : IDL.Func([], [IDL.Vec(T__2)], ['query']),
-    'getAllPengajar' : IDL.Func([], [IDL.Vec(T__1)], ['query']),
-    'getAllPesan' : IDL.Func([IDL.Text], [IDL.Vec(T__7)], ['query']),
-    'getAllPrestasi' : IDL.Func([], [IDL.Vec(T)], ['query']),
+    'deleteSiswa' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'getAllGaleri' : IDL.Func([], [IDL.Vec(T__5)], ['query']),
+    'getAllInformasi' : IDL.Func([IDL.Text], [IDL.Vec(T__4)], ['query']),
+    'getAllKegiatan' : IDL.Func([], [IDL.Vec(T__3)], ['query']),
+    'getAllPengajar' : IDL.Func([], [IDL.Vec(T__2)], ['query']),
+    'getAllPesan' : IDL.Func([IDL.Text], [IDL.Vec(T__8)], ['query']),
+    'getAllPrestasi' : IDL.Func([], [IDL.Vec(T__1)], ['query']),
+    'getAllSiswa' : IDL.Func([IDL.Text], [IDL.Vec(T)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getGaleriByKategori' : IDL.Func([IDL.Text], [IDL.Vec(T__4)], ['query']),
+    'getGaleriByKategori' : IDL.Func([IDL.Text], [IDL.Vec(T__5)], ['query']),
     'getKegiatanByStatus' : IDL.Func(
         [
           IDL.Variant({
@@ -371,10 +404,10 @@ export const idlFactory = ({ IDL }) => {
             'ongoing' : IDL.Null,
           }),
         ],
-        [IDL.Vec(T__2)],
+        [IDL.Vec(T__3)],
         ['query'],
       ),
-    'getKontak' : IDL.Func([], [IDL.Opt(T__6)], ['query']),
+    'getKontak' : IDL.Func([], [IDL.Opt(T__7)], ['query']),
     'getPrestasiByTingkat' : IDL.Func(
         [
           IDL.Variant({
@@ -385,11 +418,13 @@ export const idlFactory = ({ IDL }) => {
             'sekolah' : IDL.Null,
           }),
         ],
-        [IDL.Vec(T)],
+        [IDL.Vec(T__1)],
         ['query'],
       ),
-    'getProfil' : IDL.Func([], [IDL.Opt(T__5)], ['query']),
-    'getPublishedInformasi' : IDL.Func([], [IDL.Vec(T__3)], ['query']),
+    'getProfil' : IDL.Func([], [IDL.Opt(T__6)], ['query']),
+    'getPublishedInformasi' : IDL.Func([], [IDL.Vec(T__4)], ['query']),
+    'getSiswaByKelas' : IDL.Func([IDL.Text, IDL.Text], [IDL.Vec(T)], ['query']),
+    'getSiswaByStatus' : IDL.Func([IDL.Text, Status], [IDL.Vec(T)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -408,17 +443,18 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
         [],
       ),
-    'updateGaleri' : IDL.Func([IDL.Text, IDL.Text, T__4], [], []),
-    'updateInformasi' : IDL.Func([IDL.Text, IDL.Text, T__3], [], []),
-    'updateKegiatan' : IDL.Func([IDL.Text, IDL.Text, T__2], [], []),
+    'updateGaleri' : IDL.Func([IDL.Text, IDL.Text, T__5], [], []),
+    'updateInformasi' : IDL.Func([IDL.Text, IDL.Text, T__4], [], []),
+    'updateKegiatan' : IDL.Func([IDL.Text, IDL.Text, T__3], [], []),
     'updateKontak' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),
-    'updatePengajar' : IDL.Func([IDL.Text, IDL.Text, T__1], [], []),
-    'updatePrestasi' : IDL.Func([IDL.Text, IDL.Text, T], [], []),
+    'updatePengajar' : IDL.Func([IDL.Text, IDL.Text, T__2], [], []),
+    'updatePrestasi' : IDL.Func([IDL.Text, IDL.Text, T__1], [], []),
     'updateProfil' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+    'updateSiswa' : IDL.Func([IDL.Text, IDL.Text, T], [], []),
   });
 };
 

@@ -194,7 +194,7 @@ export default function AdminPengajarSection() {
               : null;
             return (
               <Card key={p.id} className="overflow-hidden">
-                <div className="h-36 bg-gradient-to-br from-secondary to-muted relative">
+                <div className="aspect-[3/2] bg-gradient-to-br from-secondary to-muted relative">
                   {fotoUrl ? (
                     <img
                       src={fotoUrl}
@@ -253,8 +253,8 @@ export default function AdminPengajarSection() {
             {/* Photo upload */}
             <div>
               <Label className="text-sm mb-2 block">Foto</Label>
-              <div className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border">
+              <div className="flex flex-col gap-3">
+                <div className="w-full max-w-[240px] aspect-[3/2] rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border">
                   {fotoPreview ? (
                     <img
                       src={fotoPreview}
@@ -262,7 +262,7 @@ export default function AdminPengajarSection() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <GraduationCap className="w-7 h-7 text-muted-foreground/40" />
+                    <GraduationCap className="w-10 h-10 text-muted-foreground/40" />
                   )}
                 </div>
                 <label className="cursor-pointer">

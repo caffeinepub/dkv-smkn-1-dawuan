@@ -26,7 +26,7 @@ function TeacherCard({
 
   return (
     <Card className="card-hover overflow-hidden">
-      <div className="relative h-52 bg-gradient-to-br from-brand-navy to-brand-navy/80">
+      <div className="relative aspect-[3/2] bg-gradient-to-br from-brand-navy to-brand-navy/80">
         {fotoUrl ? (
           <img
             src={fotoUrl}

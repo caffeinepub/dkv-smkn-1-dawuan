@@ -1,16 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  T__4 as Galeri,
-  T__3 as Informasi,
-  T__2 as Kegiatan,
-  T__6 as Kontak,
-  T__1 as Pengajar,
-  T__7 as Pesan,
-  T as Prestasi,
-  T__5 as Profil,
+  T__5 as Galeri,
+  T__4 as Informasi,
+  T__3 as Kegiatan,
+  T__7 as Kontak,
+  T__2 as Pengajar,
+  T__8 as Pesan,
+  T__1 as Prestasi,
+  T__6 as Profil,
+  T as Siswa,
   UserRole,
 } from "../backend.d";
 import {
+  Status,
   Variant_nasional_internasional_provinsi_kabupaten_sekolah,
   Variant_upcoming_done_ongoing,
 } from "../backend.d";
@@ -18,6 +20,7 @@ import { useActor } from "./useActor";
 import { useAdminAuth } from "./useAdminAuth";
 
 export type {
+  Siswa,
   Pengajar,
   Kegiatan,
   Informasi,
@@ -28,6 +31,7 @@ export type {
   Pesan,
 };
 export {
+  Status,
   Variant_nasional_internasional_provinsi_kabupaten_sekolah,
   Variant_upcoming_done_ongoing,
 };
@@ -453,5 +457,61 @@ export function useSendPesan() {
         timestamp,
       );
     },
+  });
+}
+
+// ---------- SISWA ----------
+export function useAllSiswa() {
+  const { actor, isFetching } = useActor();
+  const { sessionToken } = useAdminAuth();
+  return useQuery<Siswa[]>({
+    queryKey: ["siswa"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllSiswa(sessionToken ?? "");
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useAddSiswa() {
+  const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (siswa: Siswa) => {
+      if (!actor) throw new Error("No actor");
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addSiswa(sessionToken, siswa);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["siswa"] }),
+  });
+}
+
+export function useUpdateSiswa() {
+  const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Siswa }) => {
+      if (!actor) throw new Error("No actor");
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updateSiswa(sessionToken, id, data);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["siswa"] }),
+  });
+}
+
+export function useDeleteSiswa() {
+  const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("No actor");
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deleteSiswa(sessionToken, id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["siswa"] }),
   });
 }

@@ -10,7 +10,20 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type Status = { 'aktif' : null } |
+  { 'alumni' : null };
 export interface T {
+  'id' : string,
+  'status' : Status,
+  'alamat' : string,
+  'nama' : string,
+  'nisn' : string,
+  'angkatan' : bigint,
+  'kelas' : string,
+  'jurusan' : string,
+  'fotoId' : string,
+}
+export interface T__1 {
   'id' : string,
   'tahun' : bigint,
   'judul' : string,
@@ -23,7 +36,7 @@ export interface T {
   'siswa' : string,
   'fotoId' : string,
 }
-export interface T__1 {
+export interface T__2 {
   'id' : string,
   'bio' : string,
   'nama' : string,
@@ -32,7 +45,7 @@ export interface T__1 {
   'mataPelajaran' : string,
   'fotoId' : string,
 }
-export interface T__2 {
+export interface T__3 {
   'id' : string,
   'status' : { 'upcoming' : null } |
     { 'done' : null } |
@@ -43,7 +56,7 @@ export interface T__2 {
   'lokasi' : string,
   'fotoId' : string,
 }
-export interface T__3 {
+export interface T__4 {
   'id' : string,
   'isi' : string,
   'published' : boolean,
@@ -52,7 +65,7 @@ export interface T__3 {
   'tanggalPublish' : Time,
   'coverFotoId' : string,
 }
-export interface T__4 {
+export interface T__5 {
   'id' : string,
   'tanggalUpload' : Time,
   'judul' : string,
@@ -60,15 +73,15 @@ export interface T__4 {
   'kategori' : string,
   'fotoId' : string,
 }
-export interface T__5 { 'tujuan' : string, 'misi' : string, 'visi' : string }
-export interface T__6 {
+export interface T__6 { 'tujuan' : string, 'misi' : string, 'visi' : string }
+export interface T__7 {
   'jamOperasional' : string,
   'alamat' : string,
   'koordinat' : string,
   'email' : string,
   'telepon' : string,
 }
-export interface T__7 {
+export interface T__8 {
   'id' : string,
   'isi' : string,
   'nama' : string,
@@ -109,11 +122,12 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addGaleri' : ActorMethod<[string, T__4], undefined>,
-  'addInformasi' : ActorMethod<[string, T__3], undefined>,
-  'addKegiatan' : ActorMethod<[string, T__2], undefined>,
-  'addPengajar' : ActorMethod<[string, T__1], undefined>,
-  'addPrestasi' : ActorMethod<[string, T], undefined>,
+  'addGaleri' : ActorMethod<[string, T__5], undefined>,
+  'addInformasi' : ActorMethod<[string, T__4], undefined>,
+  'addKegiatan' : ActorMethod<[string, T__3], undefined>,
+  'addPengajar' : ActorMethod<[string, T__2], undefined>,
+  'addPrestasi' : ActorMethod<[string, T__1], undefined>,
+  'addSiswa' : ActorMethod<[string, T], undefined>,
   'adminLogin' : ActorMethod<
     [string, string],
     { 'ok' : string } |
@@ -126,20 +140,22 @@ export interface _SERVICE {
   'deleteKegiatan' : ActorMethod<[string, string], undefined>,
   'deletePengajar' : ActorMethod<[string, string], undefined>,
   'deletePrestasi' : ActorMethod<[string, string], undefined>,
-  'getAllGaleri' : ActorMethod<[], Array<T__4>>,
-  'getAllInformasi' : ActorMethod<[string], Array<T__3>>,
-  'getAllKegiatan' : ActorMethod<[], Array<T__2>>,
-  'getAllPengajar' : ActorMethod<[], Array<T__1>>,
-  'getAllPesan' : ActorMethod<[string], Array<T__7>>,
-  'getAllPrestasi' : ActorMethod<[], Array<T>>,
+  'deleteSiswa' : ActorMethod<[string, string], undefined>,
+  'getAllGaleri' : ActorMethod<[], Array<T__5>>,
+  'getAllInformasi' : ActorMethod<[string], Array<T__4>>,
+  'getAllKegiatan' : ActorMethod<[], Array<T__3>>,
+  'getAllPengajar' : ActorMethod<[], Array<T__2>>,
+  'getAllPesan' : ActorMethod<[string], Array<T__8>>,
+  'getAllPrestasi' : ActorMethod<[], Array<T__1>>,
+  'getAllSiswa' : ActorMethod<[string], Array<T>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getGaleriByKategori' : ActorMethod<[string], Array<T__4>>,
+  'getGaleriByKategori' : ActorMethod<[string], Array<T__5>>,
   'getKegiatanByStatus' : ActorMethod<
     [{ 'upcoming' : null } | { 'done' : null } | { 'ongoing' : null }],
-    Array<T__2>
+    Array<T__3>
   >,
-  'getKontak' : ActorMethod<[], [] | [T__6]>,
+  'getKontak' : ActorMethod<[], [] | [T__7]>,
   'getPrestasiByTingkat' : ActorMethod<
     [
       { 'nasional' : null } |
@@ -148,10 +164,12 @@ export interface _SERVICE {
         { 'kabupaten' : null } |
         { 'sekolah' : null },
     ],
-    Array<T>
+    Array<T__1>
   >,
-  'getProfil' : ActorMethod<[], [] | [T__5]>,
-  'getPublishedInformasi' : ActorMethod<[], Array<T__3>>,
+  'getProfil' : ActorMethod<[], [] | [T__6]>,
+  'getPublishedInformasi' : ActorMethod<[], Array<T__4>>,
+  'getSiswaByKelas' : ActorMethod<[string, string], Array<T>>,
+  'getSiswaByStatus' : ActorMethod<[string, Status], Array<T>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isSessionValid' : ActorMethod<[string], boolean>,
@@ -162,16 +180,17 @@ export interface _SERVICE {
     { 'ok' : null } |
       { 'err' : string }
   >,
-  'updateGaleri' : ActorMethod<[string, string, T__4], undefined>,
-  'updateInformasi' : ActorMethod<[string, string, T__3], undefined>,
-  'updateKegiatan' : ActorMethod<[string, string, T__2], undefined>,
+  'updateGaleri' : ActorMethod<[string, string, T__5], undefined>,
+  'updateInformasi' : ActorMethod<[string, string, T__4], undefined>,
+  'updateKegiatan' : ActorMethod<[string, string, T__3], undefined>,
   'updateKontak' : ActorMethod<
     [string, string, string, string, string, string],
     undefined
   >,
-  'updatePengajar' : ActorMethod<[string, string, T__1], undefined>,
-  'updatePrestasi' : ActorMethod<[string, string, T], undefined>,
+  'updatePengajar' : ActorMethod<[string, string, T__2], undefined>,
+  'updatePrestasi' : ActorMethod<[string, string, T__1], undefined>,
   'updateProfil' : ActorMethod<[string, string, string, string], undefined>,
+  'updateSiswa' : ActorMethod<[string, string, T], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

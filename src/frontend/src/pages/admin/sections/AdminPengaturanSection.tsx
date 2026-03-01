@@ -18,12 +18,14 @@ import { toast } from "sonner";
 import { ExternalBlob } from "../../../backend";
 import { useActor } from "../../../hooks/useActor";
 import { useAdminAuth } from "../../../hooks/useAdminAuth";
-import { useSiteLogo } from "../../../hooks/useSiteLogo";
+import { useSiteLogo, useUpdateSiteLogo } from "../../../hooks/useSiteLogo";
 
 export default function AdminPengaturanSection() {
   const { actor } = useActor();
   const { sessionToken } = useAdminAuth();
-  const { logoUrl, updateLogo, resetLogo, isCustom } = useSiteLogo();
+  const { logoUrl, isCustom } = useSiteLogo();
+  const { mutateAsync: updateLogoAsync, isPending: isLogoUpdating } =
+    useUpdateSiteLogo();
 
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -34,7 +36,6 @@ export default function AdminPengaturanSection() {
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [logoUploading, setLogoUploading] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,29 +51,32 @@ export default function AdminPengaturanSection() {
       toast.error("Pilih file logo terlebih dahulu.");
       return;
     }
-    setLogoUploading(true);
     try {
       const bytes = new Uint8Array(await logoFile.arrayBuffer());
       const blob = ExternalBlob.fromBytes(bytes);
       const url = blob.getDirectURL();
-      updateLogo(url);
+      await updateLogoAsync(url);
       toast.success("Logo berhasil diperbarui!");
       setLogoFile(null);
       setLogoPreview(null);
       if (logoInputRef.current) logoInputRef.current.value = "";
     } catch {
       toast.error("Gagal mengunggah logo. Silakan coba lagi.");
-    } finally {
-      setLogoUploading(false);
     }
   };
 
-  const handleLogoReset = () => {
-    resetLogo();
-    setLogoFile(null);
-    setLogoPreview(null);
-    if (logoInputRef.current) logoInputRef.current.value = "";
-    toast.success("Logo dikembalikan ke default.");
+  const handleLogoReset = async () => {
+    try {
+      await updateLogoAsync(
+        "/assets/generated/dkv-logo-transparent.dim_200x200.png",
+      );
+      setLogoFile(null);
+      setLogoPreview(null);
+      if (logoInputRef.current) logoInputRef.current.value = "";
+      toast.success("Logo dikembalikan ke default.");
+    } catch {
+      toast.error("Gagal mereset logo.");
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -201,10 +205,10 @@ export default function AdminPengaturanSection() {
           <div className="flex gap-2">
             <Button
               onClick={() => void handleLogoSave()}
-              disabled={logoUploading || !logoFile}
+              disabled={isLogoUpdating || !logoFile}
               className="bg-brand-navy hover:bg-brand-navy/90 text-white"
             >
-              {logoUploading ? (
+              {isLogoUpdating ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Mengunggah...
@@ -219,7 +223,7 @@ export default function AdminPengaturanSection() {
             {isCustom && (
               <Button
                 variant="outline"
-                onClick={handleLogoReset}
+                onClick={() => void handleLogoReset()}
                 className="text-muted-foreground"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />

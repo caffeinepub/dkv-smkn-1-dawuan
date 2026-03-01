@@ -8,15 +8,15 @@ import Runtime "mo:core/Runtime";
 import Array "mo:core/Array";
 import Nat "mo:core/Nat";
 import Principal "mo:core/Principal";
-import MixinAuthorization "authorization/MixinAuthorization";
-import AccessControl "authorization/access-control";
-import MixinStorage "blob-storage/Mixin";
-import Storage "blob-storage/Storage";
 import Iter "mo:core/Iter";
 
 import Random "mo:core/Random";
 import Blob "mo:core/Blob";
 
+import MixinAuthorization "authorization/MixinAuthorization";
+import AccessControl "authorization/access-control";
+import MixinStorage "blob-storage/Mixin";
+import Storage "blob-storage/Storage";
 
 actor {
   include MixinStorage();
@@ -172,7 +172,7 @@ actor {
     isSessionValidInternal(sessionToken);
   };
 
-  // Set admin credentials (requires Caffeine admin token or valid session)
+  // Set admin credentials (requires Caffeine admin OR valid session)
   public shared ({ caller }) func setAdminCredentials(
     username : Text,
     password : Text,
@@ -310,11 +310,34 @@ actor {
 
   let pesanList = List.empty<Pesan.T>();
 
+  // Siswa (NEW)
+  module Siswa {
+    public type Status = { #aktif; #alumni };
+
+    public type T = {
+      id : Text;
+      nama : Text;
+      nisn : Text;
+      kelas : Text;
+      angkatan : Nat;
+      jurusan : Text;
+      alamat : Text;
+      fotoId : Text;
+      status : Status;
+    };
+
+    public func compareByNama(a : T, b : T) : Order.Order {
+      Text.compare(a.nama, b.nama);
+    };
+  };
+
+  let siswaList = List.empty<Siswa.T>();
+
   // ============================================
   // Profil Jurusan
   // ============================================
 
-  public shared func updateProfil(sessionToken : Text, visi : Text, misi : Text, tujuan : Text) : async () {
+  public shared ({ caller }) func updateProfil(sessionToken : Text, visi : Text, misi : Text, tujuan : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -329,14 +352,14 @@ actor {
   // Pengajar
   // ============================================
 
-  public shared func addPengajar(sessionToken : Text, pengajar : Pengajar.T) : async () {
+  public shared ({ caller }) func addPengajar(sessionToken : Text, pengajar : Pengajar.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     pengajarList.add(pengajar);
   };
 
-  public shared func updatePengajar(sessionToken : Text, id : Text, updated : Pengajar.T) : async () {
+  public shared ({ caller }) func updatePengajar(sessionToken : Text, id : Text, updated : Pengajar.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -348,7 +371,7 @@ actor {
     pengajarList.addAll(newList.values());
   };
 
-  public shared func deletePengajar(sessionToken : Text, id : Text) : async () {
+  public shared ({ caller }) func deletePengajar(sessionToken : Text, id : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -366,14 +389,14 @@ actor {
   // Galeri
   // ============================================
 
-  public shared func addGaleri(sessionToken : Text, galeri : Galeri.T) : async () {
+  public shared ({ caller }) func addGaleri(sessionToken : Text, galeri : Galeri.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     galeriList.add(galeri);
   };
 
-  public shared func updateGaleri(sessionToken : Text, id : Text, updated : Galeri.T) : async () {
+  public shared ({ caller }) func updateGaleri(sessionToken : Text, id : Text, updated : Galeri.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -385,7 +408,7 @@ actor {
     galeriList.addAll(newList.values());
   };
 
-  public shared func deleteGaleri(sessionToken : Text, id : Text) : async () {
+  public shared ({ caller }) func deleteGaleri(sessionToken : Text, id : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -407,14 +430,14 @@ actor {
   // Informasi
   // ============================================
 
-  public shared func addInformasi(sessionToken : Text, informasi : Informasi.T) : async () {
+  public shared ({ caller }) func addInformasi(sessionToken : Text, informasi : Informasi.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     informasiList.add(informasi);
   };
 
-  public shared func updateInformasi(sessionToken : Text, id : Text, updated : Informasi.T) : async () {
+  public shared ({ caller }) func updateInformasi(sessionToken : Text, id : Text, updated : Informasi.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -426,7 +449,7 @@ actor {
     informasiList.addAll(newList.values());
   };
 
-  public shared func deleteInformasi(sessionToken : Text, id : Text) : async () {
+  public shared ({ caller }) func deleteInformasi(sessionToken : Text, id : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -451,14 +474,14 @@ actor {
   // Prestasi
   // ============================================
 
-  public shared func addPrestasi(sessionToken : Text, prestasi : Prestasi.T) : async () {
+  public shared ({ caller }) func addPrestasi(sessionToken : Text, prestasi : Prestasi.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     prestasiList.add(prestasi);
   };
 
-  public shared func updatePrestasi(sessionToken : Text, id : Text, updated : Prestasi.T) : async () {
+  public shared ({ caller }) func updatePrestasi(sessionToken : Text, id : Text, updated : Prestasi.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -470,7 +493,7 @@ actor {
     prestasiList.addAll(newList.values());
   };
 
-  public shared func deletePrestasi(sessionToken : Text, id : Text) : async () {
+  public shared ({ caller }) func deletePrestasi(sessionToken : Text, id : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -493,15 +516,14 @@ actor {
   // ============================================
   // Kegiatan
   // ============================================
-
-  public shared func addKegiatan(sessionToken : Text, kegiatan : Kegiatan.T) : async () {
+  public shared ({ caller }) func addKegiatan(sessionToken : Text, kegiatan : Kegiatan.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     kegiatanList.add(kegiatan);
   };
 
-  public shared func updateKegiatan(sessionToken : Text, id : Text, updated : Kegiatan.T) : async () {
+  public shared ({ caller }) func updateKegiatan(sessionToken : Text, id : Text, updated : Kegiatan.T) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -513,7 +535,7 @@ actor {
     kegiatanList.addAll(newList.values());
   };
 
-  public shared func deleteKegiatan(sessionToken : Text, id : Text) : async () {
+  public shared ({ caller }) func deleteKegiatan(sessionToken : Text, id : Text) : async () {
     if (not isSessionValidInternal(sessionToken)) {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
@@ -537,7 +559,7 @@ actor {
   // Kontak
   // ============================================
 
-  public shared func updateKontak(
+  public shared ({ caller }) func updateKontak(
     sessionToken : Text,
     alamat : Text,
     telepon : Text,
@@ -576,5 +598,59 @@ actor {
       Runtime.trap("Unauthorized: Invalid or expired session token");
     };
     pesanList.toArray().sort(Pesan.compareByTimestamp);
+  };
+
+  // ============================================
+  // Siswa (NEW)
+  // ============================================
+
+  public shared ({ caller }) func addSiswa(sessionToken : Text, siswa : Siswa.T) : async () {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+    siswaList.add(siswa);
+  };
+
+  public shared ({ caller }) func updateSiswa(sessionToken : Text, id : Text, updated : Siswa.T) : async () {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+
+    let newList = siswaList.map<Siswa.T, Siswa.T>(
+      func(s) { if (s.id == id) { updated } else { s } }
+    );
+    siswaList.clear();
+    siswaList.addAll(newList.values());
+  };
+
+  public shared ({ caller }) func deleteSiswa(sessionToken : Text, id : Text) : async () {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+
+    let newList = siswaList.filter(func(s) { s.id != id });
+    siswaList.clear();
+    siswaList.addAll(newList.values());
+  };
+
+  public query func getAllSiswa(sessionToken : Text) : async [Siswa.T] {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+    siswaList.toArray().sort(Siswa.compareByNama);
+  };
+
+  public query func getSiswaByKelas(sessionToken : Text, kelas : Text) : async [Siswa.T] {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+    siswaList.filter(func(s) { s.kelas == kelas }).toArray();
+  };
+
+  public query func getSiswaByStatus(sessionToken : Text, status : Siswa.Status) : async [Siswa.T] {
+    if (not isSessionValidInternal(sessionToken)) {
+      Runtime.trap("Unauthorized: Invalid or expired session token");
+    };
+    siswaList.filter(func(s) { s.status == status }).toArray();
   };
 };

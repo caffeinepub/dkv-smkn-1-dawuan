@@ -92,7 +92,7 @@ function HeroCarousel({
   pengajarCount: number;
   prestasiCount: number;
 }) {
-  const { slides } = useHeroSlides();
+  const { data: slides = [] } = useHeroSlides();
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

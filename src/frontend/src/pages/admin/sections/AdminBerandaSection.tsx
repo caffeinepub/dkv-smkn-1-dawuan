@@ -33,7 +33,11 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { ExternalBlob } from "../../../backend";
-import { type HeroSlide, useHeroSlides } from "../../../hooks/useHeroSlides";
+import {
+  type HeroSlide,
+  useHeroSlides,
+  useSaveHeroSlides,
+} from "../../../hooks/useHeroSlides";
 
 const emptyForm = {
   judul: "",
@@ -41,8 +45,8 @@ const emptyForm = {
 };
 
 export default function AdminBerandaSection() {
-  const { slides, addSlide, updateSlide, deleteSlide, moveSlide } =
-    useHeroSlides();
+  const { data: slides = [], isLoading } = useHeroSlides();
+  const { mutateAsync: saveSlides, isPending: isSaving } = useSaveHeroSlides();
 
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -99,13 +103,19 @@ export default function AdminBerandaSection() {
         fotoUrl = blob.getDirectURL();
       }
 
+      let updatedSlides: HeroSlide[];
+
       if (editingId) {
-        updateSlide(editingId, {
-          judul: form.judul.trim(),
-          deskripsi: form.deskripsi.trim(),
-          fotoUrl,
-        });
-        toast.success("Slide berhasil diperbarui!");
+        updatedSlides = slides.map((s) =>
+          s.id === editingId
+            ? {
+                ...s,
+                judul: form.judul.trim(),
+                deskripsi: form.deskripsi.trim(),
+                fotoUrl,
+              }
+            : s,
+        );
       } else {
         const newSlide: HeroSlide = {
           id: crypto.randomUUID(),
@@ -117,10 +127,16 @@ export default function AdminBerandaSection() {
               ? Math.max(...slides.map((s) => s.urutan)) + 1
               : 0,
         };
-        addSlide(newSlide);
-        toast.success("Slide berhasil ditambahkan!");
+        updatedSlides = [...slides, newSlide];
       }
 
+      await saveSlides(updatedSlides);
+
+      toast.success(
+        editingId
+          ? "Slide berhasil diperbarui!"
+          : "Slide berhasil ditambahkan!",
+      );
       setOpen(false);
     } catch {
       toast.error("Gagal menyimpan slide.");
@@ -129,11 +145,36 @@ export default function AdminBerandaSection() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteId) return;
-    deleteSlide(deleteId);
-    toast.success("Slide berhasil dihapus.");
-    setDeleteId(null);
+    try {
+      const updatedSlides = slides.filter((s) => s.id !== deleteId);
+      await saveSlides(updatedSlides);
+      toast.success("Slide berhasil dihapus.");
+    } catch {
+      toast.error("Gagal menghapus slide.");
+    } finally {
+      setDeleteId(null);
+    }
+  };
+
+  const handleMoveSlide = async (id: string, direction: "up" | "down") => {
+    const idx = slides.findIndex((s) => s.id === id);
+    if (idx === -1) return;
+    const newIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= slides.length) return;
+
+    const updated = [...slides];
+    const tempUrutan = updated[idx].urutan;
+    updated[idx] = { ...updated[idx], urutan: updated[newIdx].urutan };
+    updated[newIdx] = { ...updated[newIdx], urutan: tempUrutan };
+    updated.sort((a, b) => a.urutan - b.urutan);
+
+    try {
+      await saveSlides(updated);
+    } catch {
+      toast.error("Gagal mengubah urutan slide.");
+    }
   };
 
   const currentPreview = fotoPreview || existingFotoUrl || null;
@@ -160,7 +201,12 @@ export default function AdminBerandaSection() {
       </div>
 
       {/* Info */}
-      {slides.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin opacity-40" />
+          <p className="text-sm">Memuat data slide...</p>
+        </div>
+      ) : slides.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground border-2 border-dashed border-border rounded-xl">
           <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="font-medium mb-1">Belum ada slide hero</p>
@@ -213,8 +259,8 @@ export default function AdminBerandaSection() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => moveSlide(slide.id, "up")}
-                        disabled={idx === 0}
+                        onClick={() => void handleMoveSlide(slide.id, "up")}
+                        disabled={idx === 0 || isSaving}
                         className="h-8 w-8 p-0"
                         title="Pindah ke atas"
                       >
@@ -223,8 +269,8 @@ export default function AdminBerandaSection() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => moveSlide(slide.id, "down")}
-                        disabled={idx === slides.length - 1}
+                        onClick={() => void handleMoveSlide(slide.id, "down")}
+                        disabled={idx === slides.length - 1 || isSaving}
                         className="h-8 w-8 p-0"
                         title="Pindah ke bawah"
                       >
@@ -339,10 +385,10 @@ export default function AdminBerandaSection() {
             </Button>
             <Button
               onClick={() => void handleSave()}
-              disabled={uploading}
+              disabled={uploading || isSaving}
               className="bg-brand-navy hover:bg-brand-navy/90 text-white"
             >
-              {uploading ? (
+              {uploading || isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Menyimpan...
@@ -372,7 +418,7 @@ export default function AdminBerandaSection() {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Hapus

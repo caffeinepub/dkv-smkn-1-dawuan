@@ -1,39 +1,83 @@
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useActor } from "./useActor";
+import { useAdminAuth } from "./useAdminAuth";
 
-const LOGO_KEY = "dkv_site_logo_url";
 const DEFAULT_LOGO = "/assets/generated/dkv-logo-transparent.dim_200x200.png";
+const LOGO_GALERI_ID = "__site_logo_config__";
+const LOGO_KATEGORI = "__system_logo__";
 
+// ---------- Public read hook ----------
 export function useSiteLogo() {
-  const [logoUrl, setLogoUrl] = useState<string>(() => {
-    return localStorage.getItem(LOGO_KEY) || DEFAULT_LOGO;
+  const { actor, isFetching } = useActor();
+
+  const query = useQuery<string>({
+    queryKey: ["site-logo"],
+    queryFn: async () => {
+      if (!actor) return DEFAULT_LOGO;
+      try {
+        const allGaleri = await actor.getAllGaleri();
+        const logoEntry = allGaleri.find((g) => g.kategori === LOGO_KATEGORI);
+        if (!logoEntry || !logoEntry.deskripsi) return DEFAULT_LOGO;
+        return logoEntry.deskripsi;
+      } catch {
+        return DEFAULT_LOGO;
+      }
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 60_000,
   });
 
-  useEffect(() => {
-    const handler = (e: StorageEvent) => {
-      if (e.key === LOGO_KEY) {
-        setLogoUrl(e.newValue || DEFAULT_LOGO);
+  const logoUrl = query.data ?? DEFAULT_LOGO;
+  const isCustom = logoUrl !== DEFAULT_LOGO;
+
+  return {
+    logoUrl,
+    isCustom,
+    isLoading: query.isLoading,
+  };
+}
+
+// ---------- Admin write hook ----------
+export function useUpdateSiteLogo() {
+  const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (logoUrl: string) => {
+      if (!actor) throw new Error("No actor");
+      if (!sessionToken) throw new Error("Not authenticated");
+
+      const allGaleri = await actor.getAllGaleri();
+      const existing = allGaleri.find((g) => g.kategori === LOGO_KATEGORI);
+
+      if (existing) {
+        await actor.updateGaleri(sessionToken, existing.id, {
+          ...existing,
+          deskripsi: logoUrl,
+        });
+      } else {
+        await actor.addGaleri(sessionToken, {
+          id: LOGO_GALERI_ID,
+          judul: "__system_logo__",
+          deskripsi: logoUrl,
+          kategori: LOGO_KATEGORI,
+          fotoId: "",
+          tanggalUpload: BigInt(Date.now()) * 1_000_000n,
+        });
       }
-    };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["site-logo"] });
+    },
+  });
+}
 
-  const updateLogo = useCallback((url: string) => {
-    localStorage.setItem(LOGO_KEY, url);
-    setLogoUrl(url);
-    // Dispatch event so other tabs/components pick up the change
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: LOGO_KEY, newValue: url }),
-    );
-  }, []);
-
-  const resetLogo = useCallback(() => {
-    localStorage.removeItem(LOGO_KEY);
-    setLogoUrl(DEFAULT_LOGO);
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: LOGO_KEY, newValue: null }),
-    );
-  }, []);
-
-  return { logoUrl, updateLogo, resetLogo, isCustom: logoUrl !== DEFAULT_LOGO };
+export function useResetSiteLogo() {
+  const updateLogo = useUpdateSiteLogo();
+  return {
+    ...updateLogo,
+    mutate: () => updateLogo.mutate(DEFAULT_LOGO),
+    mutateAsync: () => updateLogo.mutateAsync(DEFAULT_LOGO),
+  };
 }
