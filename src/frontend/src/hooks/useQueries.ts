@@ -15,6 +15,7 @@ import {
   Variant_upcoming_done_ongoing,
 } from "../backend.d";
 import { useActor } from "./useActor";
+import { useAdminAuth } from "./useAdminAuth";
 
 export type {
   Pengajar,
@@ -31,7 +32,7 @@ export {
   Variant_upcoming_done_ongoing,
 };
 
-// ---------- AUTH ----------
+// ---------- AUTH (legacy — kept for compatibility) ----------
 export function useIsAdmin() {
   const { actor, isFetching } = useActor();
   return useQuery<boolean>({
@@ -71,11 +72,18 @@ export function useProfil() {
 
 export function useUpdateProfil() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data: Profil) => {
       if (!actor) throw new Error("No actor");
-      return actor.updateProfil(data.visi, data.misi, data.tujuan);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updateProfil(
+        sessionToken,
+        data.visi,
+        data.misi,
+        data.tujuan,
+      );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["profil"] }),
   });
@@ -96,11 +104,13 @@ export function useAllPengajar() {
 
 export function useAddPengajar() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (p: Pengajar) => {
       if (!actor) throw new Error("No actor");
-      return actor.addPengajar(p);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addPengajar(sessionToken, p);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["pengajar"] }),
   });
@@ -108,11 +118,13 @@ export function useAddPengajar() {
 
 export function useUpdatePengajar() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Pengajar }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updatePengajar(id, data);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updatePengajar(sessionToken, id, data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["pengajar"] }),
   });
@@ -120,11 +132,13 @@ export function useUpdatePengajar() {
 
 export function useDeletePengajar() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error("No actor");
-      return actor.deletePengajar(id);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deletePengajar(sessionToken, id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["pengajar"] }),
   });
@@ -145,11 +159,13 @@ export function useAllGaleri() {
 
 export function useAddGaleri() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (g: Galeri) => {
       if (!actor) throw new Error("No actor");
-      return actor.addGaleri(g);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addGaleri(sessionToken, g);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["galeri"] }),
   });
@@ -157,11 +173,13 @@ export function useAddGaleri() {
 
 export function useUpdateGaleri() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Galeri }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updateGaleri(id, data);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updateGaleri(sessionToken, id, data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["galeri"] }),
   });
@@ -169,11 +187,13 @@ export function useUpdateGaleri() {
 
 export function useDeleteGaleri() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error("No actor");
-      return actor.deleteGaleri(id);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deleteGaleri(sessionToken, id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["galeri"] }),
   });
@@ -194,11 +214,12 @@ export function usePublishedInformasi() {
 
 export function useAllInformasi() {
   const { actor, isFetching } = useActor();
+  const { sessionToken } = useAdminAuth();
   return useQuery<Informasi[]>({
     queryKey: ["informasi-all"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllInformasi();
+      return actor.getAllInformasi(sessionToken ?? "");
     },
     enabled: !!actor && !isFetching,
   });
@@ -206,11 +227,13 @@ export function useAllInformasi() {
 
 export function useAddInformasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (info: Informasi) => {
       if (!actor) throw new Error("No actor");
-      return actor.addInformasi(info);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addInformasi(sessionToken, info);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["informasi-all"] });
@@ -221,11 +244,13 @@ export function useAddInformasi() {
 
 export function useUpdateInformasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Informasi }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updateInformasi(id, data);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updateInformasi(sessionToken, id, data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["informasi-all"] });
@@ -236,11 +261,13 @@ export function useUpdateInformasi() {
 
 export function useDeleteInformasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error("No actor");
-      return actor.deleteInformasi(id);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deleteInformasi(sessionToken, id);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["informasi-all"] });
@@ -264,11 +291,13 @@ export function useAllPrestasi() {
 
 export function useAddPrestasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (p: Prestasi) => {
       if (!actor) throw new Error("No actor");
-      return actor.addPrestasi(p);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addPrestasi(sessionToken, p);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["prestasi"] }),
   });
@@ -276,11 +305,13 @@ export function useAddPrestasi() {
 
 export function useUpdatePrestasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Prestasi }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updatePrestasi(id, data);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updatePrestasi(sessionToken, id, data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["prestasi"] }),
   });
@@ -288,11 +319,13 @@ export function useUpdatePrestasi() {
 
 export function useDeletePrestasi() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error("No actor");
-      return actor.deletePrestasi(id);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deletePrestasi(sessionToken, id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["prestasi"] }),
   });
@@ -313,11 +346,13 @@ export function useAllKegiatan() {
 
 export function useAddKegiatan() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (k: Kegiatan) => {
       if (!actor) throw new Error("No actor");
-      return actor.addKegiatan(k);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.addKegiatan(sessionToken, k);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["kegiatan"] }),
   });
@@ -325,11 +360,13 @@ export function useAddKegiatan() {
 
 export function useUpdateKegiatan() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Kegiatan }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updateKegiatan(id, data);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.updateKegiatan(sessionToken, id, data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["kegiatan"] }),
   });
@@ -337,11 +374,13 @@ export function useUpdateKegiatan() {
 
 export function useDeleteKegiatan() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error("No actor");
-      return actor.deleteKegiatan(id);
+      if (!sessionToken) throw new Error("Not authenticated");
+      return actor.deleteKegiatan(sessionToken, id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["kegiatan"] }),
   });
@@ -362,11 +401,14 @@ export function useKontak() {
 
 export function useUpdateKontak() {
   const { actor } = useActor();
+  const { sessionToken } = useAdminAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (k: Kontak) => {
       if (!actor) throw new Error("No actor");
+      if (!sessionToken) throw new Error("Not authenticated");
       return actor.updateKontak(
+        sessionToken,
         k.alamat,
         k.telepon,
         k.email,
@@ -381,11 +423,12 @@ export function useUpdateKontak() {
 // ---------- PESAN ----------
 export function useAllPesan() {
   const { actor, isFetching } = useActor();
+  const { sessionToken } = useAdminAuth();
   return useQuery<Pesan[]>({
     queryKey: ["pesan"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllPesan();
+      return actor.getAllPesan(sessionToken ?? "");
     },
     enabled: !!actor && !isFetching,
   });

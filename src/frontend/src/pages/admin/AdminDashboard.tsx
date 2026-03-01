@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   Calendar,
@@ -12,18 +11,19 @@ import {
   MessageSquare,
   Newspaper,
   Phone,
+  Settings,
   Trophy,
   Users,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
-import { useIsAdmin } from "../../hooks/useQueries";
+import { useAdminAuth } from "../../hooks/useAdminAuth";
 import AdminGaleriSection from "./sections/AdminGaleriSection";
 import AdminInformasiSection from "./sections/AdminInformasiSection";
 import AdminKegiatanSection from "./sections/AdminKegiatanSection";
 import AdminKontakSection from "./sections/AdminKontakSection";
 import AdminPengajarSection from "./sections/AdminPengajarSection";
+import AdminPengaturanSection from "./sections/AdminPengaturanSection";
 import AdminPesanSection from "./sections/AdminPesanSection";
 import AdminPrestasiSection from "./sections/AdminPrestasiSection";
 import AdminProfilSection from "./sections/AdminProfilSection";
@@ -36,7 +36,8 @@ type Section =
   | "prestasi"
   | "kegiatan"
   | "kontak"
-  | "pesan";
+  | "pesan"
+  | "pengaturan";
 
 const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "profil", label: "Profil Jurusan", icon: LayoutDashboard },
@@ -47,6 +48,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "kegiatan", label: "Kegiatan", icon: Calendar },
   { id: "kontak", label: "Kontak", icon: Phone },
   { id: "pesan", label: "Pesan Masuk", icon: MessageSquare },
+  { id: "pengaturan", label: "Pengaturan", icon: Settings },
 ];
 
 const sectionComponents: Record<Section, React.ComponentType> = {
@@ -58,6 +60,7 @@ const sectionComponents: Record<Section, React.ComponentType> = {
   kegiatan: AdminKegiatanSection,
   kontak: AdminKontakSection,
   pesan: AdminPesanSection,
+  pengaturan: AdminPengaturanSection,
 };
 
 export default function AdminDashboard() {
@@ -67,24 +70,17 @@ export default function AdminDashboard() {
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  const { clear, identity, isInitializing } = useInternetIdentity();
-  const queryClient = useQueryClient();
-  const { data: isAdmin, isLoading: checkingAdmin } = useIsAdmin();
-
-  const isAuthenticated = !!identity;
+  const { isLoggedIn, isLoading, logout } = useAdminAuth();
 
   // Auth guard
   useEffect(() => {
-    if (!isInitializing && !checkingAdmin) {
-      if (!isAuthenticated || isAdmin === false) {
-        navigate({ to: "/admin" });
-      }
+    if (!isLoading && !isLoggedIn) {
+      navigate({ to: "/admin" });
     }
-  }, [isInitializing, checkingAdmin, isAuthenticated, isAdmin, navigate]);
+  }, [isLoading, isLoggedIn, navigate]);
 
   const handleLogout = async () => {
-    await clear();
-    queryClient.clear();
+    await logout();
     navigate({ to: "/admin" });
   };
 
@@ -93,7 +89,7 @@ export default function AdminDashboard() {
     setMobileSidebarOpen(false);
   };
 
-  if (isInitializing || checkingAdmin) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-10 h-10 text-brand-navy animate-spin" />
@@ -101,7 +97,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!isAuthenticated || !isAdmin) {
+  if (!isLoggedIn) {
     return null;
   }
 
@@ -167,14 +163,14 @@ export default function AdminDashboard() {
         <div className="p-3 border-t border-sidebar-border">
           <div className="px-3 py-2 mb-2">
             <p className="text-xs text-sidebar-foreground/50">Masuk sebagai</p>
-            <p className="text-xs text-sidebar-foreground/80 font-mono truncate">
-              {identity?.getPrincipal().toString().slice(0, 20)}...
+            <p className="text-xs text-sidebar-foreground/80 font-medium">
+              Admin
             </p>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleLogout}
+            onClick={() => void handleLogout()}
             className="w-full justify-start text-sidebar-foreground/60 hover:text-red-400 hover:bg-red-400/10"
           >
             <LogOut className="w-4 h-4 mr-2" />

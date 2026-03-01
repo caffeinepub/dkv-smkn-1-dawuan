@@ -1,48 +1,36 @@
-# DKV SMKN 1 Dawuan Website
+# DKV SMKN 1 Dawuan
 
 ## Current State
-New project. No existing code.
+
+Website jurusan DKV SMKN 1 Dawuan dengan halaman publik (Beranda, Profil, Galeri, Informasi, Prestasi, Kegiatan, Kontak) dan panel admin. Login admin saat ini menggunakan Internet Identity (ICP) yang tidak familiar bagi pengguna awam dan menyebabkan masalah akses.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Public website for Jurusan DKV (Desain Komunikasi Visual) SMKN 1 Dawuan
-- Admin login system with role-based access control
-- Menu navigasi: Profil, Galeri, Informasi, Prestasi, Kegiatan, Kontak
-- Profil page: Visi, Misi, Tujuan, dan daftar Pengajar dengan foto
-- Galeri page: grid foto kegiatan/karya siswa, admin dapat upload/hapus foto
-- Informasi page: daftar berita/info, admin dapat tambah/edit/hapus
-- Prestasi page: daftar prestasi siswa/jurusan, admin dapat tambah/edit/hapus
-- Kegiatan page: daftar kegiatan, admin dapat tambah/edit/hapus
-- Kontak page: informasi kontak jurusan dan form pesan
-- Admin dashboard: kelola semua konten (pengajar, galeri, informasi, prestasi, kegiatan, profil)
+- Backend: fungsi `adminLogin(username, password)` yang mengembalikan session token jika credential valid
+- Backend: fungsi `adminLogout(token)` untuk menghapus session
+- Backend: fungsi `verifyAdminSession(token)` untuk memeriksa validitas session
+- Backend: fungsi `setAdminCredentials(username, password, adminToken)` untuk mengatur username/password awal (dipanggil dengan admin token Caffeine)
+- Frontend: form login username + password di halaman `/admin`
+- Frontend: session token disimpan di localStorage/sessionStorage
+- Hook `useAdminSession` untuk mengelola status login berbasis token
 
 ### Modify
-- (none, new project)
+- Backend: `isCallerAdmin()` tetap ada, tapi tambah jalur autentikasi berbasis session token
+- Frontend: `AdminPage.tsx` -- ganti UI Internet Identity dengan form username/password
+- Frontend: `AdminDashboard.tsx` -- ganti pengecekan identity dengan pengecekan session token
+- Frontend: `useActor.ts` -- actor tetap anonim, session token dikirim via fungsi backend
+- Frontend: `useQueries.ts` -- fungsi admin menggunakan session token bukan identity
 
 ### Remove
-- (none, new project)
+- Frontend: semua referensi ke `useInternetIdentity` di halaman admin
+- Frontend: logika "klaim akses dengan token" yang membingungkan
 
 ## Implementation Plan
 
-### Backend (Motoko)
-- Auth: admin login (username/password), session management
-- Profil: store/update visi, misi, tujuan
-- Pengajar: CRUD pengajar (nama, jabatan, mata pelajaran, foto URL)
-- Galeri: CRUD foto galeri (judul, deskripsi, foto URL, kategori)
-- Informasi: CRUD artikel informasi (judul, isi, tanggal, foto)
-- Prestasi: CRUD prestasi (judul, deskripsi, tahun, foto, tingkat)
-- Kegiatan: CRUD kegiatan (judul, deskripsi, tanggal, foto, lokasi)
-- Kontak: store informasi kontak, terima & simpan pesan masuk
-
-### Frontend (React + TypeScript)
-- Landing page / home dengan hero section
-- Navbar dengan semua menu
-- Halaman Profil: tabs Visi/Misi/Tujuan, grid Pengajar dengan foto
-- Halaman Galeri: masonry/grid foto dengan lightbox
-- Halaman Informasi: daftar kartu artikel
-- Halaman Prestasi: daftar prestasi dengan badge tingkat
-- Halaman Kegiatan: daftar kegiatan dengan tanggal
-- Halaman Kontak: info kontak + form kirim pesan
-- Admin panel: login form, dashboard dengan tabel CRUD semua konten
-- File upload untuk foto pengajar dan galeri
+1. Tambah fungsi backend: `adminLogin`, `adminLogout`, `verifyAdminSession`, `setAdminCredentials`, `isSessionAdmin` di main.mo
+2. Buat hook `useAdminAuth` di frontend untuk mengelola state login username/password
+3. Redesain `AdminPage.tsx` dengan form username/password yang clean
+4. Update `AdminDashboard.tsx` agar menggunakan session token (bukan Internet Identity)
+5. Update semua query admin di `useQueries.ts` untuk menyertakan token session
+6. Pastikan actor tetap anonim tapi semua operasi admin melewati verifikasi token session di backend

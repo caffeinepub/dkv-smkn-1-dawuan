@@ -93,22 +93,30 @@ export enum Variant_upcoming_done_ongoing {
     ongoing = "ongoing"
 }
 export interface backendInterface {
-    addGaleri(galeri: T__4): Promise<void>;
-    addInformasi(informasi: T__3): Promise<void>;
-    addKegiatan(kegiatan: T__2): Promise<void>;
-    addPengajar(pengajar: T__1): Promise<void>;
-    addPrestasi(prestasi: T): Promise<void>;
+    addGaleri(sessionToken: string, galeri: T__4): Promise<void>;
+    addInformasi(sessionToken: string, informasi: T__3): Promise<void>;
+    addKegiatan(sessionToken: string, kegiatan: T__2): Promise<void>;
+    addPengajar(sessionToken: string, pengajar: T__1): Promise<void>;
+    addPrestasi(sessionToken: string, prestasi: T): Promise<void>;
+    adminLogin(username: string, password: string): Promise<{
+        __kind__: "ok";
+        ok: string;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
+    adminLogout(sessionToken: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    deleteGaleri(id: string): Promise<void>;
-    deleteInformasi(id: string): Promise<void>;
-    deleteKegiatan(id: string): Promise<void>;
-    deletePengajar(id: string): Promise<void>;
-    deletePrestasi(id: string): Promise<void>;
+    deleteGaleri(sessionToken: string, id: string): Promise<void>;
+    deleteInformasi(sessionToken: string, id: string): Promise<void>;
+    deleteKegiatan(sessionToken: string, id: string): Promise<void>;
+    deletePengajar(sessionToken: string, id: string): Promise<void>;
+    deletePrestasi(sessionToken: string, id: string): Promise<void>;
     getAllGaleri(): Promise<Array<T__4>>;
-    getAllInformasi(): Promise<Array<T__3>>;
+    getAllInformasi(sessionToken: string): Promise<Array<T__3>>;
     getAllKegiatan(): Promise<Array<T__2>>;
     getAllPengajar(): Promise<Array<T__1>>;
-    getAllPesan(): Promise<Array<T__7>>;
+    getAllPesan(sessionToken: string): Promise<Array<T__7>>;
     getAllPrestasi(): Promise<Array<T>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -120,13 +128,21 @@ export interface backendInterface {
     getPublishedInformasi(): Promise<Array<T__3>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    isSessionValid(sessionToken: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     sendPesan(nama: string, email: string, subjek: string, isi: string, timestamp: Time): Promise<void>;
-    updateGaleri(id: string, updated: T__4): Promise<void>;
-    updateInformasi(id: string, updated: T__3): Promise<void>;
-    updateKegiatan(id: string, updated: T__2): Promise<void>;
-    updateKontak(alamat: string, telepon: string, email: string, jamOperasional: string, koordinat: string): Promise<void>;
-    updatePengajar(id: string, updated: T__1): Promise<void>;
-    updatePrestasi(id: string, updated: T): Promise<void>;
-    updateProfil(visi: string, misi: string, tujuan: string): Promise<void>;
+    setAdminCredentials(username: string, password: string, caffeineAdminToken: string): Promise<{
+        __kind__: "ok";
+        ok: null;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
+    updateGaleri(sessionToken: string, id: string, updated: T__4): Promise<void>;
+    updateInformasi(sessionToken: string, id: string, updated: T__3): Promise<void>;
+    updateKegiatan(sessionToken: string, id: string, updated: T__2): Promise<void>;
+    updateKontak(sessionToken: string, alamat: string, telepon: string, email: string, jamOperasional: string, koordinat: string): Promise<void>;
+    updatePengajar(sessionToken: string, id: string, updated: T__1): Promise<void>;
+    updatePrestasi(sessionToken: string, id: string, updated: T): Promise<void>;
+    updateProfil(sessionToken: string, visi: string, misi: string, tujuan: string): Promise<void>;
 }

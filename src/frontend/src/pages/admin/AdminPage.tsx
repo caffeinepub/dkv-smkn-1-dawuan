@@ -2,253 +2,215 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  KeyRound,
-  Loader2,
-  LogIn,
-  Shield,
-} from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AlertCircle, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
-import { useIsAdmin } from "../../hooks/useQueries";
+import { useAdminAuth } from "../../hooks/useAdminAuth";
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const { login, clear, loginStatus, identity, isInitializing } =
-    useInternetIdentity();
-  const queryClient = useQueryClient();
-  const { data: isAdmin, isLoading: checkingAdmin } = useIsAdmin();
+  const { login, isLoading, error, isLoggedIn, clearError } = useAdminAuth();
 
-  const isAuthenticated = !!identity;
-  const isLoggingIn = loginStatus === "logging-in";
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [showTokenForm, setShowTokenForm] = useState(false);
-  const [adminToken, setAdminToken] = useState("");
-  const [isClaimingAccess, setIsClaimingAccess] = useState(false);
-
-  // Redirect to dashboard if authenticated and admin
+  // Redirect to dashboard if already logged in
   useEffect(() => {
-    if (isAuthenticated && isAdmin === true) {
+    if (isLoggedIn) {
       navigate({ to: "/admin/dashboard" });
     }
-  }, [isAuthenticated, isAdmin, navigate]);
+  }, [isLoggedIn, navigate]);
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username.trim() || !password.trim()) return;
     try {
-      await login();
-    } catch (error: unknown) {
-      const err = error as Error;
-      if (err?.message === "User is already authenticated") {
-        await clear();
-        queryClient.clear();
-        setTimeout(() => login(), 300);
-      }
-    }
-  };
-
-  const handleLogout = async () => {
-    await clear();
-    queryClient.clear();
-  };
-
-  const handleClaimAccess = async () => {
-    if (!adminToken.trim()) return;
-    setIsClaimingAccess(true);
-
-    try {
-      // Save token to sessionStorage so useActor picks it up on next login
-      sessionStorage.setItem("caffeineAdminToken", adminToken.trim());
-      // Logout current session
-      await clear();
-      queryClient.clear();
-      // Re-login after a short delay so useActor reinitializes with the token
-      setTimeout(() => {
-        login();
-      }, 500);
+      await login(username.trim(), password);
+      navigate({ to: "/admin/dashboard" });
     } catch {
-      setIsClaimingAccess(false);
+      // error is set by useAdminAuth
     }
   };
 
-  if (isInitializing || (isAuthenticated && checkingAdmin)) {
+  if (isLoading && !error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-brand-navy animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Memeriksa akses...</p>
+          <p className="text-muted-foreground text-sm">Memeriksa sesi...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy to-brand-navy/80 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy via-brand-navy/90 to-brand-navy/70 p-4">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-orange/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full max-w-sm relative z-10"
       >
         {/* Logo + Title */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.35 }}
+            className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20"
+          >
             <img
               src="/assets/generated/dkv-logo-transparent.dim_200x200.png"
               alt="DKV Logo"
               className="w-14 h-14 object-contain"
             />
-          </div>
-          <h1 className="font-display text-2xl font-bold text-white mb-1">
-            Admin Panel
-          </h1>
-          <p className="text-white/60 text-sm">DKV SMKN 1 Dawuan</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.35 }}
+          >
+            <h1 className="font-display text-2xl font-bold text-white mb-1">
+              Admin Panel
+            </h1>
+            <p className="text-white/60 text-sm">DKV SMKN 1 Dawuan</p>
+          </motion.div>
         </div>
 
-        <Card className="border-0 shadow-2xl">
-          <CardContent className="p-8">
-            {!isAuthenticated ? (
-              /* Login State */
-              <div className="text-center">
-                <div className="w-16 h-16 bg-brand-navy/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                  <Shield className="w-8 h-8 text-brand-navy" />
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.35 }}
+        >
+          <Card className="border-0 shadow-2xl bg-white">
+            <CardContent className="p-8">
+              <div className="mb-6">
+                <div className="w-12 h-12 bg-brand-navy/10 rounded-xl flex items-center justify-center mb-4">
+                  <Lock className="w-6 h-6 text-brand-navy" />
                 </div>
-                <h2 className="font-display text-xl font-bold text-brand-navy mb-2">
+                <h2 className="font-display text-xl font-bold text-brand-navy">
                   Masuk ke Admin
                 </h2>
-                <p className="text-muted-foreground text-sm mb-8">
-                  Masuk menggunakan Internet Identity untuk mengakses panel
-                  admin
+                <p className="text-muted-foreground text-sm mt-1">
+                  Masukkan kredensial untuk mengakses panel admin
                 </p>
-                <Button
-                  onClick={handleLogin}
-                  disabled={isLoggingIn}
-                  className="w-full bg-brand-navy hover:bg-brand-navy/90 text-white font-medium h-11"
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mb-4 flex items-start gap-2.5 p-3 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm"
                 >
-                  {isLoggingIn ? (
+                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+
+              <form
+                onSubmit={(e) => void handleSubmit(e)}
+                className="space-y-4"
+              >
+                {/* Username */}
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="username"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Username
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="Masukkan username"
+                      value={username}
+                      onChange={(e) => {
+                        setUsername(e.target.value);
+                        clearError();
+                      }}
+                      autoComplete="username"
+                      autoFocus
+                      className="pl-10 h-11"
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Masukkan password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        clearError();
+                      }}
+                      autoComplete="current-password"
+                      className="pl-10 pr-10 h-11"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={
+                        showPassword
+                          ? "Sembunyikan password"
+                          : "Tampilkan password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading || !username.trim() || !password.trim()}
+                  className="w-full bg-brand-navy hover:bg-brand-navy/90 text-white font-medium h-11 mt-2"
+                >
+                  {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Memproses...
                     </>
                   ) : (
-                    <>
-                      <LogIn className="w-4 h-4 mr-2" />
-                      Masuk dengan Internet Identity
-                    </>
+                    "Masuk"
                   )}
                 </Button>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Hanya admin yang dapat mengakses panel ini.
-                </p>
-              </div>
-            ) : isAdmin === false ? (
-              /* Access Denied */
-              <div>
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                    <AlertTriangle className="w-8 h-8 text-red-500" />
-                  </div>
-                  <h2 className="font-display text-xl font-bold text-red-600 mb-2">
-                    Akses Ditolak
-                  </h2>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    Akun Anda tidak memiliki hak akses sebagai admin. Silakan
-                    hubungi administrator untuk mendapatkan akses.
-                  </p>
-                  <p className="text-xs text-muted-foreground font-mono bg-secondary p-2 rounded break-all">
-                    Principal:{" "}
-                    {identity?.getPrincipal().toString().slice(0, 20)}
-                    ...
-                  </p>
-                </div>
+              </form>
 
-                {/* Token claim section */}
-                <div className="border border-border rounded-xl overflow-hidden mb-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowTokenForm((prev) => !prev)}
-                    className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary/50 transition-colors"
-                  >
-                    <span className="flex items-center gap-2">
-                      <KeyRound className="w-4 h-4" />
-                      Apakah Anda admin? Masukkan token untuk mengklaim akses
-                    </span>
-                    {showTokenForm ? (
-                      <ChevronUp className="w-4 h-4 shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 shrink-0" />
-                    )}
-                  </button>
-
-                  <AnimatePresence>
-                    {showTokenForm && (
-                      <motion.div
-                        key="token-form"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-4 pb-4 pt-2 border-t border-border space-y-3">
-                          <div className="space-y-1.5">
-                            <Label
-                              htmlFor="admin-token"
-                              className="text-xs text-muted-foreground"
-                            >
-                              Token Admin
-                            </Label>
-                            <Input
-                              id="admin-token"
-                              type="password"
-                              placeholder="Masukkan token admin..."
-                              value={adminToken}
-                              onChange={(e) => setAdminToken(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") void handleClaimAccess();
-                              }}
-                              className="h-9 text-sm"
-                            />
-                          </div>
-                          <Button
-                            onClick={() => void handleClaimAccess()}
-                            disabled={!adminToken.trim() || isClaimingAccess}
-                            className="w-full bg-brand-navy hover:bg-brand-navy/90 text-white h-9 text-sm"
-                          >
-                            {isClaimingAccess ? (
-                              <>
-                                <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
-                                Memproses...
-                              </>
-                            ) : (
-                              <>
-                                <KeyRound className="w-3.5 h-3.5 mr-2" />
-                                Klaim Akses Admin
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <Button
-                  variant="outline"
-                  onClick={handleLogout}
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                >
-                  Keluar
-                </Button>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
+              <p className="text-xs text-muted-foreground text-center mt-5">
+                Hanya admin yang dapat mengakses panel ini.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
     </div>
   );
